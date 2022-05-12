@@ -1,4 +1,5 @@
 import React,{useState,useEffect} from 'react';
+import {useNavigate} from 'react-router-dom'
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
@@ -9,28 +10,41 @@ import Paper from '@mui/material/Paper';
 import Navbar from "./Navbar";
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 import E from '@mui/icons-material/Edit';
-import { Button,Box,Fab, Checkbox } from '@mui/material';
+import { Button,Box,Fab, Checkbox, TextField,CardContent,CardHeader,FormGroup,Avatar } from '@mui/material';
 import firebase from 'firebase';
+// import { product} from '../../Firebase';
 import {product} from '../../Firebase'
-import { CheckBox } from '@mui/icons-material';
-// function createData(name, Brand, Color, Type, Rent,Carnp,Chassisno,RC,PICS) {
-//   return { name, Brand, Color, Type, Rent,Carnp,Chassisno,RC,PICS};
-// }
+import { CheckBox,AccountCircleOutlined} from '@mui/icons-material';
+import Typography from '@mui/material/Typography';
+import Modal from '@mui/material/Modal';
+import Form from './Form';
 
-// const rows = [
-//   createData('Baleno', 'Maruti','White','Suv', 400,'PB-10-HD-7198',123456789,123456789),
-//   createData('Ertica', 'Maruti', 'White','SUV', 430,'PB-10-HD-7198',123456789,123456789),
-//   createData('Brio','Honda', 'White','SUV', 600,'PB-10-HD-7198',123456789,123456789),
-//   createData('Etios','Toyata','White','SUV', 403,'PB-10-HD-7198',123456789,123456789),
-//   createData('Innova','Toyata', 'White','SUV', 390,'PB-10-HD-7198',123456789,123456789),
-// ];
 
 
 
 
 export default function View() {
+ 
+  // const[getname,setname]=useState('');
 
+  const [image, setimage] = useState();
+
+  const style = {
+    position: 'absolute',
+    top: '50%',
+    left: '50%',
+    transform: 'translate(-50%, -50%)',
+    width: 400,
+    bgcolor: 'background.paper',
+    border: '2px solid #000',
+    boxShadow: 24,
+    p: 4,
+  };
+  const [open, setOpen] = useState(false);
+  const handleOpen = () => setOpen(true);
+  const handleClose = () => setOpen(false);
   const[data,setdata]=useState([]);
+  // const [getname,setname]=useState('');
 function Fetch(e){
   product.onSnapshot((succ)=>{
     const ar=[];
@@ -44,26 +58,40 @@ function Fetch(e){
 useEffect(()=>{
   Fetch();
 })
-  
+const [names,setnames] = useState('');
+    const [brand,setbrand] = useState('');
+    const [color,setcolor] = useState('');
+    const [type,settype] = useState('');
+    const [rent,setrent] = useState('');
+    const [np,setnp] = useState('');
+    const [chassis,setchassis] = useState('');
+    const [rc,setrc] = useState('');
+    // const [type,settype] = useState('');
+
+
 function delpro(x){
       product.doc(x).delete();
       // storageRef.refFromURL(x.data().Image).delete();
       alert('Product Deleted');    
   }
 
-
-  function Edit(e){
-    e.preventDefault();
-    var data=new FormData(e.currentTarget);
-    product.doc(name).get().then((succ)=>{
-
-    })
-
-  }
+const[check,setcheck]=useState(false);
+var a=useNavigate();
+  function Edit1(e){
+    setcheck(true);
+  var path='/View?uid'+e;
+  a(path);
+    
+    }
+    var id=new URLSearchParams(window.location.search).get('uid');
+// function getData(){
+// if(id)
+// }
+  
   return (
     <>
     <Navbar/>
-    <Fab color='primary' style={{position:'fixed', right:'20px', bottom:'20px'}} onClick={Edit}>
+    <Fab color='primary' onClick={Edit1} style={{position:'fixed', right:'20px', bottom:'20px'}}>
             <E/>
         </Fab>
 
@@ -110,15 +138,69 @@ function delpro(x){
                onClick={()=>delpro(row.id)}
               >
                  <DeleteOutlineIcon/></Button></TableCell>
-                 <TableCell>
-                   <Checkbox onClick={Edit1}/>
-                   </TableCell>
+                { check && (<TableCell>
+                   <Checkbox onClick={handleOpen}/>
+                   </TableCell>)}
             </TableRow>
           ))}
         </TableBody>
       </Table>
     </TableContainer>
     </Box>
+ <Modal
+        open={open}
+        onClose={handleClose}
+        aria-labelledby="modal-modal-title"
+        aria-describedby="modal-modal-description"
+      >
+        <Box sx={style}>
+        <form onSubmit={getData}>
+                                          <CardContent>
+                                    <CardHeader avatar={
+                                        <Avatar sx={{ bgcolor: 'royalblue' }}><AccountCircleOutlined /></Avatar>}
+                                        title="AddDriver" />
+                                   <FormGroup>
+                               <TextField type={"text"}  value={names}  size="small" name="cn" label="Car Name" required/>
+                                   </FormGroup>
+                                   <br/>
+                                   <FormGroup>
+                               <TextField type={"text"}  size="small" name="cb" label="Car-brand" required/>
+                                   </FormGroup>
+                                   <br/>
+                                   <FormGroup>
+                               <TextField type={"text"}  size="small" name="cc" label="Car-color" required/>
+                                   </FormGroup>
+                                   <br/>
+                                   <FormGroup>
+                               <TextField type={"text"}  size="small" name="ct" label="Car-Type" required/>
+                                   </FormGroup>
+                                   
+                                   <br/>
+                                  <FormGroup>
+                               <TextField type={"number"}  size="small" name="ca" label="Caramount" required/>
+                                   </FormGroup>
+                                   <br/>
+                                   
+                                   <FormGroup>
+                               <TextField type={"text"}  size="small" name="cp" label="Car-no-plate" required/>
+                                   </FormGroup>
+                                   <br/>
+                                   <FormGroup>
+                               <TextField type={"text"}  size="small" name="cch" label="Chasis-Number" required/>
+                                   </FormGroup>
+                                   <br/>
+                                   <FormGroup>
+                               <TextField type={"text"}  size="small" name="rc" label="Rc-Number" required/>
+                                   </FormGroup>
+                                   <br/>
+                                   <TextField onChange={(e) => setimage(e.target.files[0])} type={'file'} name='image' fullWidth size='small' />
+                                   <Button type={"submit"}>Update</Button>
+                                  </CardContent>
+                                  </form>
+        </Box>
+      </Modal>
+
+
     </>
   );
 }
